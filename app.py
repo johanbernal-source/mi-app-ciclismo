@@ -64,7 +64,7 @@ if atleta_seleccionado:
         with tab1:
             st.write("**Curva Hipérbola de Potencia vs Tiempo Límite (Tlim)**")
             st.write("Esta gráfica muestra cuántos segundos puede sostener el atleta una potencia determinada antes de llegar al fallo metabólico.")
-             t_rango = np.arange(10, 301, 5) # de 10 a 300 segundos
+            t_rango = np.arange(10, 301, 5) # de 10 a 300 segundos
             potencias = [cp_atleta + (w_prime_atleta / t) for t in t_rango]
             df_curva = pd.DataFrame({'Tiempo (s)': t_rango, 'Potencia Soportada (W)': potencias}).set_index('Tiempo (s)')
             st.line_chart(df_curva)
@@ -86,5 +86,9 @@ if atleta_seleccionado:
             
             for t in tiempo_int:
                 if t < 20 or (t >= 40 and t < 60): # Fases de ataque (+150W sobre CP)
-                    actual =
-
+                    actual = max(0, actual - 150)
+                else: # Fases de recuperación (-100W bajo CP, el tanque se recupera)
+                    actual = min(w_prime_atleta, actual + 70)
+                reserva_dinamica.append(actual)
+                
+            df_intermitente = pd.DataFrame({'Tiempo (s)': tiempo_int, 'Reserva W\' (J)': reserva_dinamica}).set_
