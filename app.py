@@ -5,9 +5,10 @@ st.set_page_config(page_title="Analytics de Potencia Critica", layout="wide")
 
 @st.cache_data
 def cargar_datos_ejemplo():
+    # Aquí cambiamos los nombres reales por etiquetas anónimas (A, B, C, D)
     data = {
         'athlete_id': ['USR-001', 'USR-002', 'USR-003', 'USR-004'],
-        'nombre': ['Carlos Rodriguez (Fondista)', 'Ana Martinez (Sprinter)', 'Sprint Master', 'Atleta Amateur'],
+        'nombre': ['Atleta A (Perfil Fondista)', 'Atleta B (Perfil Sprinter)', 'Atleta C (Perfil Potencia Alta)', 'Atleta D (Perfil Amateur)'],
         'CP_W': [360, 280, 410, 210],
         'W_prime_J': [18000, 25000, 15000, 12000]
     }
@@ -34,7 +35,7 @@ if atleta_seleccionado:
         
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.metric(label="Atleta", value=str(atleta_seleccionado), delta=nombre_atleta)
+            st.metric(label="Sujeto de Prueba", value=str(atleta_seleccionado), delta=nombre_atleta)
         with col2:
             st.metric(label="Potencia Critica (CP)", value=f"{cp_atleta} W")
         with col3:
@@ -48,6 +49,6 @@ Los parametros obtenidos mediante el analisis de datos nos permiten cuantificar 
 
 La **Potencia Critica ($CP$)** representa el umbral metabolico superior en estado estable. Fisiologicamente, delimita la transicion entre el dominio de intensidad alta y el dominio de intensidad severa. Una $CP$ de {cp_atleta} W es el reflejo directo de la eficiencia de su sistema aerobico.
 
-Por otro lado, la **Capacidad de Trabajo Anaerobico ($W'$)** de {w_prime_atleta} J representa la cantidad finita de energia disponible para realizar trabajo por encima de la $CP$. Cuando el atleta supera la barrera de sus {cp_atleta} W, entra en el dominio de intensidad severa, iniciando una cuenta atras metabólica donde el almacenamiento de {w_prime_atleta} J comienza a vaciarse.
+Por otro lado, la **Capacidad de Trabajo Anaerobico ($W'$)** de {w_prime_atleta} J representa la cantidad finita de energia disponible para realizar trabajo por encima de la $CP$. Cuando el sujeto supera la barrera de sus {cp_atleta} W, entra en el dominio de intensidad severa, iniciando una cuenta atras metabólica donde el almacenamiento de {w_prime_atleta} J comienza a vaciarse.
 """
         st.info(interpretacion_texto)
