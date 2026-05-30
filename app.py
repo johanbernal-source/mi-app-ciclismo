@@ -57,11 +57,11 @@ if atleta_seleccionado:
             
         st.markdown("---")
         
-        # --- GRÁFICA DE SIMULACIÓN DE AGOTAMIENTO DE W' ---
+        # --- GRÁFICA DE SIMULACIÓN DE AGOTAMIENTO DE W' (EN LÍNEA IMPLÍCITA) ---
         st.subheader(f"📈 Simulación de Vaciamiento de Reserva Energética (W') para {atleta_seleccionado}")
         st.write("Esta gráfica modela matemáticamente cómo se agota el tanque anaeróbico cuando el atleta realiza un esfuerzo mantenido por encima de su Potencia Crítica (+100 vatios extra).")
         
-        # Simulación matemática simple del vaciado en 60 segundos
+        # Simulación matemática del vaciado en 60 segundos
         tiempo = np.arange(0, 61, 1)
         # Tasa de vaciado proporcional al esfuerzo extra por encima de CP
         energia_restante = [max(0, w_prime_atleta - (100 * t)) for t in tiempo]
@@ -71,7 +71,8 @@ if atleta_seleccionado:
             'Energía Disponible (Julios)': energia_restante
         }).set_index('Tiempo (Segundos)')
         
-        st.area_chart(df_simulacion)
+        # Cambiado a gráfico de línea limpio
+        st.line_chart(df_simulacion)
         
         st.markdown("---")
         st.subheader("Reporte e Interpretacion Fisiologica")
