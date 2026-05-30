@@ -56,32 +56,35 @@ if atleta_seleccionado:
             st.metric(label="Nivel de Rendimiento", value=f"{porcentaje:.1f}%", delta="vs Máximo del Grupo")
             
         st.markdown("---")
+        st.subheader("📈 Bloque de Gráficas de Rendimiento Avanzado")
         
-        # --- GRÁFICA DE SIMULACIÓN DE AGOTAMIENTO DE W' (EN LÍNEA IMPLÍCITA) ---
-        st.subheader(f"📈 Simulación de Vaciamiento de Reserva Energética (W') para {atleta_seleccionado}")
-        st.write("Esta gráfica modela matemáticamente cómo se agota el tanque anaeróbico cuando el atleta realiza un esfuerzo mantenido por encima de su Potencia Crítica (+100 vatios extra).")
+        # Crear pestañas para organizar las múltiples gráficas por persona
+        tab1, tab2, tab3 = st.tabs(["1. Curva Potencia-Tiempo", "2. Vaciamiento de Reserva W'", "3. Rebalance Intermitente"])
         
-        # Simulación matemática del vaciado en 60 segundos
-        tiempo = np.arange(0, 61, 1)
-        # Tasa de vaciado proporcional al esfuerzo extra por encima de CP
-        energia_restante = [max(0, w_prime_atleta - (100 * t)) for t in tiempo]
-        
-        df_simulacion = pd.DataFrame({
-            'Tiempo (Segundos)': tiempo,
-            'Energía Disponible (Julios)': energia_restante
-        }).set_index('Tiempo (Segundos)')
-        
-        # Cambiado a gráfico de línea limpio
-        st.line_chart(df_simulacion)
-        
-        st.markdown("---")
-        st.subheader("Reporte e Interpretacion Fisiologica")
-        
-        interpretacion_texto = f"""
-Los parametros obtenidos mediante el analisis de datos nos permiten cuantificar la capacidad bioenergetica del atleta basandonos en el modelo de Potencia Critica. Este modelo divide el rendimiento en dos componentes diferenciados: la **Potencia Critica ($CP$)**, establecida en **{cp_atleta} W**, y la **Capacidad de Trabajo Anaerobico ($W'$)**, cuantificada en **{w_prime_atleta} J**.
-
-El sujeto se encuentra al **{porcentaje:.1f}%** de la potencia aeróbica máxima registrada en el grupo de control. Cuando el sujeto supera la barrera de sus {cp_atleta} W, entra en el dominio de intensidad severa, iniciando la cuenta atrás metabólica reflejada en la gráfica lineal superior, donde el almacenamiento de {w_prime_atleta} J comienza a vaciarse linealmente.
-"""
-        st.info(interpretacion_texto)
-
+        with tab1:
+            st.write("**Curva Hipérbola de Potencia vs Tiempo Límite (Tlim)**")
+            st.write("Esta gráfica muestra cuántos segundos puede sostener el atleta una potencia determinada antes de llegar al fallo metabólico.")
+             t_rango = np.arange(10, 301, 5) # de 10 a 300 segundos
+            potencias = [cp_atleta + (w_prime_atleta / t) for t in t_rango]
+            df_curva = pd.DataFrame({'Tiempo (s)': t_rango, 'Potencia Soportada (W)': potencias}).set_index('Tiempo (s)')
+            st.line_chart(df_curva)
+            
+        with tab2:
+            st.write("**Simulación de Vaciamiento Lineal de W'**")
+            st.write("Disminución continua de los Julios de reserva energética al sostener un esfuerzo de intensidad severa (+100W sobre la CP).")
+            tiempo = np.arange(0, 61, 1)
+            energia_restante = [max(0, w_prime_atleta - (100 * t)) for t in tiempo]
+            df_simulacion = pd.DataFrame({'Tiempo (s)': tiempo, 'Energía Disponible (J)': energia_restante}).set_index('Tiempo (s)')
+            st.line_chart(df_simulacion)
+            
+        with tab3:
+            st.write("**Modelo Intermitente W'bal (Vaciamiento y Recuperación)**")
+            st.write("Simulación dinámica: El atleta aprieta 20s sobre su CP (gasta energía), luego recupera 20s pedaleando suave por debajo de su CP (el tanque se vuelve a llenar).")
+            tiempo_int = np.arange(0, 81, 1)
+            reserva_dinamica = []
+            actual = w_prime_atleta
+            
+            for t in tiempo_int:
+                if t < 20 or (t >= 40 and t < 60): # Fases de ataque (+150W sobre CP)
+                    actual =
 
