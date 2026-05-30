@@ -64,9 +64,10 @@ if atleta_seleccionado:
         with tab1:
             st.write("**Curva Hipérbola de Potencia vs Tiempo Límite (Tlim)**")
             st.write("Esta gráfica muestra cuántos segundos puede sostener el atleta una potencia determinada antes de llegar al fallo metabólico.")
-            t_rango = np.arange(10, 301, 5) # de 10 a 300 segundos
+            t_rango = np.arange(10, 301, 5) 
             potencias = [cp_atleta + (w_prime_atleta / t) for t in t_rango]
-            df_curva = pd.DataFrame({'Tiempo (s)': t_rango, 'Potencia Soportada (W)': potencias}).set_index('Tiempo (s)')
+            df_curva = pd.DataFrame({'Tiempo (s)': t_rango, 'Potencia Soportada (W)': potencias})
+            df_curva = df_curva.set_index('Tiempo (s)')
             st.line_chart(df_curva)
             
         with tab2:
@@ -74,7 +75,8 @@ if atleta_seleccionado:
             st.write("Disminución continua de los Julios de reserva energética al sostener un esfuerzo de intensidad severa (+100W sobre la CP).")
             tiempo = np.arange(0, 61, 1)
             energia_restante = [max(0, w_prime_atleta - (100 * t)) for t in tiempo]
-            df_simulacion = pd.DataFrame({'Tiempo (s)': tiempo, 'Energía Disponible (J)': energia_restante}).set_index('Tiempo (s)')
+            df_simulacion = pd.DataFrame({'Tiempo (s)': tiempo, 'Energía Disponible (J)': energia_restante})
+            df_simulacion = df_simulacion.set_index('Tiempo (s)')
             st.line_chart(df_simulacion)
             
         with tab3:
@@ -85,10 +87,23 @@ if atleta_seleccionado:
             actual = w_prime_atleta
             
             for t in tiempo_int:
-                if t < 20 or (t >= 40 and t < 60): # Fases de ataque (+150W sobre CP)
+                if t < 20 or (t >= 40 and t < 60): 
                     actual = max(0, actual - 150)
-                else: # Fases de recuperación (-100W bajo CP, el tanque se recupera)
+                else: 
                     actual = min(w_prime_atleta, actual + 70)
                 reserva_dinamica.append(actual)
                 
-            df_intermitente = pd.DataFrame({'Tiempo (s)': tiempo_int, 'Reserva W\' (J)': reserva_dinamica}).set_
+            # Aquí corregimos el corte separando la creación del DataFrame de la asignación del índice
+            df_intermitente = pd.DataFrame({'Tiempo (s)': tiempo_int, 'Reserva W\' (J)': reserva_dinamica})
+            df_intermitente = df_intermitente.set_index('Tiempo (s)')
+            st.line_chart(df_intermitente)
+        
+        st.markdown("---")
+        st.subheader("Reporte e Interpretacion Fisiologica")
+        
+        interpretacion_texto = f"""
+Los parametros obtenidos mediante el analisis de datos nos permiten cuantificar la capacidad bioenergetica del atleta basandonos en el modelo de Potencia Critica. Este modelo divide el rendimiento en dos componentes diferenciados: la **Potencia Critica ($CP$)**, establecida en **{cp_atleta} W**, y la **Capacidad de Trabajo Anaerobico ($W'$)**, cuantificada en **{w_prime_atleta} J**.
+
+El sujeto se encuentra al **{porcentaje:.1f}%** de la potencia aeróbica máxima registrada en el grupo de control. Cuando el sujeto supera la barrera de sus {cp_atleta} W, entra en el dominio de intensidad severa, iniciando la cuenta atrás metabólica reflejada en las gráficas superiores.
+"""
+        st.info(interpretacion_texto)
